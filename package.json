@@ -1,7 +1,7 @@
 {
-    "name": "redux-personal-project",
+    "name": "Redux_Personal-Project_Lectrum",
     "version": "1.4.0",
-    "author": "Dima Vakatsiienko <d.vakatsiienko@lectrum.io>",
+    "author": "Roman Stoliarenko <r.a.stoliarenko@gmail.com>",
     "private": true,
     "scripts": {
         "start": "nodemon",
