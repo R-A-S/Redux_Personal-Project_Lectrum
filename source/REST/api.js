@@ -28,11 +28,11 @@ export const api = {
                     authorization:  TOKEN,
                     'content-type': 'application/json',
                 },
-                body: JSON.stringify([task]),
+                body: JSON.stringify(task),
             });
         },
         remove (id) {
-            fetch(`${MAIN_URL}/${id}`, {
+            return fetch(`${MAIN_URL}/${id}`, {
                 method:  'DELETE',
                 headers: {
                     authorization: TOKEN,
