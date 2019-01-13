@@ -12,16 +12,33 @@ import Checkbox from '../../theme/assets/Checkbox';
 import Remove from '../../theme/assets/Remove';
 import Edit from '../../theme/assets/Edit';
 import Star from '../../theme/assets/Star';
+import { Control } from 'react-redux-form/lib/immutable';
 
 // Actions
 import { tasksActions } from '../../bus/tasks/actions';
+import { actions as formsActions } from 'react-redux-form/lib/immutable';
 
-const mapStateToProps = (state) => {
-    return { tasks: state.tasks };
+const mapStateToProps = (state, props) => {
+    return {
+        tasks:         state.tasks,
+        edit:          state.forms.edit,
+        isTaskEditing: state.forms.edit.get('editMessageId') === props.id,
+        editedMessage: state.forms.edit.get('editedMessage'),
+    };
 };
 
 const mapDispatchToProps = (dispatch) => {
-    return { actions: bindActionCreators({ ...tasksActions }, dispatch) };
+    return {
+        actions: {
+            ...bindActionCreators({ ...tasksActions }, dispatch),
+            editTask: (message, id = null) => {
+                dispatch(formsActions.change('forms.edit.editMessageId', id));
+                dispatch(
+                    formsActions.change('forms.edit.editedMessage', message)
+                );
+            },
+        },
+    };
 };
 
 @connect(
@@ -41,12 +58,36 @@ export default class Task extends PureComponent {
         actions.updateTaskAsync([editedTask]);
     };
 
-    _updateTaskMessageOnKeyDown = () => {
-        //!!!!!!!!!!!!!
+    _updateTaskMessageOnClick = () => {
+        const {
+            id,
+            actions: { editTask },
+            message,
+            isTaskEditing,
+        } = this.props;
+
+        if (isTaskEditing) {
+            return editTask(message);
+        }
+
+        editTask(message, id);
     };
 
-    __updateTaskMessageOnClick = () => {
-        //!!!!!!!!!!!!!
+    _updateTaskMessageOnKeyDown = (e) => {
+        const {
+            actions: { editTask },
+            message,
+            editedMessage,
+        } = this.props;
+
+        if (e.key === 'Enter' && editedMessage.trim()) {
+            editTask(editedMessage);
+            this._updateTask({ message: editedMessage });
+        }
+
+        if (e.key === 'Escape') {
+            return editTask(message);
+        }
     };
 
     _toggleTaskCompletedState = () => {
@@ -58,11 +99,22 @@ export default class Task extends PureComponent {
     };
 
     render () {
-        const { message, completed, favorite } = this.props;
+        const { message, completed, favorite, isTaskEditing } = this.props;
 
         const styles = cx(Styles.task, {
             [Styles.completed]: completed,
         });
+
+        const messageEdit = isTaskEditing ? (
+            <Control.text
+                getRef = { (node) => node && node.focus() }
+                maxLength = { 50 }
+                model = 'forms.edit.editedMessage'
+                onKeyDown = { this._updateTaskMessageOnKeyDown }
+            />
+        ) : (
+            <input disabled type = 'text' value = { message } />
+        );
 
         return (
             <li className = { styles }>
@@ -75,7 +127,7 @@ export default class Task extends PureComponent {
                         color2 = '#FFF'
                         onClick = { this._toggleTaskCompletedState }
                     />
-                    <input disabled type = 'text' value = { message } />
+                    {messageEdit}
                 </div>
                 <div className = { Styles.actions }>
                     <Star
@@ -88,7 +140,7 @@ export default class Task extends PureComponent {
                     />
                     <Edit
                         inlineBlock
-                        checked = { false }
+                        checked = { isTaskEditing }
                         className = { Styles.updateTaskMessageOnClick }
                         color1 = '#3B8EF3'
                         color2 = '#000'

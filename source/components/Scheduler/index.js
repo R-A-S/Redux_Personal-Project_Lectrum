@@ -13,7 +13,11 @@ import Spinner from '../Spinner';
 import Catcher from '../Catcher';
 import Checkbox from '../../theme/assets/Checkbox';
 import FlipMove from 'react-flip-move';
-import { Control, Form } from 'react-redux-form/lib/immutable';
+import {
+    Control,
+    Form,
+    actions as formsActions
+} from 'react-redux-form/lib/immutable';
 
 // Actions
 import { tasksActions } from '../../bus/tasks/actions';
@@ -28,7 +32,12 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        actions: bindActionCreators({ ...tasksActions }, dispatch),
+        actions: {
+            ...bindActionCreators({ ...tasksActions }, dispatch),
+            clearMessage: () => {
+                dispatch(formsActions.change('forms.newTask.message', ''));
+            },
+        },
     };
 };
 
@@ -43,14 +52,16 @@ export default class Scheduler extends Component {
         actions.fetchTasksAsync();
     }
 
-    //TODO : !Не удаляется текст с поля!
     _createTask = () => {
         const {
             newMessage,
-            actions: { createTaskAsync },
+            actions: { createTaskAsync, clearMessage },
         } = this.props;
 
-        createTaskAsync(newMessage);
+        if (newMessage.trim()) {
+            createTaskAsync(newMessage);
+            clearMessage();
+        }
     };
 
     _completeAllTasks = () => {
@@ -68,7 +79,7 @@ export default class Scheduler extends Component {
     };
 
     render () {
-        const { actions, tasks, filter } = this.props;
+        const { actions, tasks, filter, newMessage } = this.props;
 
         const getAllCompleted = tasks.every((task) => task.get('completed'));
 
@@ -106,17 +117,18 @@ export default class Scheduler extends Component {
                         />
                     </header>
                     <section>
-                        <Form model = 'forms.newTask' onSubmit = { this._createTask }>
-                            <Control.text
+                        <Form
+                            noValidate
+                            model = 'forms.newTask'
+                            onSubmit = { this._createTask }>
+                            <Control
                                 required
                                 className = { Styles.createTask }
                                 maxLength = { 50 }
                                 model = 'forms.newTask.message'
                                 placeholder = 'Описание моей новой задачи'
                                 type = 'text'
-                                validators = { {
-                                    required: (val) => val && val.length,
-                                } }
+                                value = { newMessage }
                             />
                             <button>Добавить задачу</button>
                         </Form>
@@ -128,7 +140,7 @@ export default class Scheduler extends Component {
                                     enterAnimation = { {
                                         from: {
                                             transform: 'rotateX(90deg)',
-                                            opacity:   0.1,
+                                            opacity:   0.5,
                                         },
                                         to: {
                                             transform: '',
@@ -140,7 +152,7 @@ export default class Scheduler extends Component {
                                         },
                                         to: {
                                             transform: 'rotateX(-90deg)',
-                                            opacity:   0.1,
+                                            opacity:   0.5,
                                         },
                                     } }
                                     staggerDelayBy = { 50 }>

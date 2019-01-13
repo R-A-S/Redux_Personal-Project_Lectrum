@@ -9,10 +9,16 @@ const search = Map({
     filterMessage: '',
 });
 
+const edit = Map({
+    editMessageId: '',
+    editedMessage: '',
+});
+
 export const formsReducer = combineForms(
     {
         newTask,
         search,
+        edit,
     },
     'forms'
 );
