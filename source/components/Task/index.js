@@ -83,8 +83,8 @@ export default class Task extends PureComponent {
         } = this.props;
 
         if (e.key === 'Enter' && editedMessage.trim()) {
-            editTask(editedMessage);
             this._updateTask({ message: editedMessage });
+            editTask(editedMessage);
         }
 
         if (e.key === 'Escape') {
