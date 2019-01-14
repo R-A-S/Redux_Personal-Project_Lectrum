@@ -22,7 +22,7 @@ export function* updateTask ({ payload: task }) {
 
         yield put(tasksActions.updateTask([updatedTask]));
     } catch (error) {
-        yield put(uiActions.emitError(error.message, '→ editTask worker'));
+        yield put(uiActions.emitError(error.message, '→ updateTask worker'));
     } finally {
         yield put(uiActions.stopFetching());
     }

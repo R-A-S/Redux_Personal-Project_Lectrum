@@ -5,7 +5,13 @@ import { takeEvery, all, call } from 'redux-saga/effects';
 import { types } from '../types';
 
 // Workers
-import { fetchTasks, createTask, removeTask, updateTask, completeAllTasks } from './workers';
+import {
+    fetchTasks,
+    createTask,
+    removeTask,
+    updateTask,
+    completeAllTasks
+} from './workers';
 
 function* watchFetchTasks () {
     yield takeEvery(types.FETCH_TASKS_ASYNC, fetchTasks);

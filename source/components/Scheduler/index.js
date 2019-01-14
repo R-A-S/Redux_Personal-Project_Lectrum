@@ -13,14 +13,11 @@ import Spinner from '../Spinner';
 import Catcher from '../Catcher';
 import Checkbox from '../../theme/assets/Checkbox';
 import FlipMove from 'react-flip-move';
-import {
-    Control,
-    Form,
-    actions as formsActions
-} from 'react-redux-form/lib/immutable';
+import { Control, Form } from 'react-redux-form/lib/immutable';
 
 // Actions
 import { tasksActions } from '../../bus/tasks/actions';
+import { actions as formsActions } from 'react-redux-form/lib/immutable';
 
 const mapStateToProps = (state) => {
     return {
@@ -71,6 +68,7 @@ export default class Scheduler extends Component {
         if (allCompleted) {
             return null;
         }
+
         const completedTasks = tasks.map((task) =>
             task.set('completed', 'true')
         );
@@ -78,20 +76,37 @@ export default class Scheduler extends Component {
         actions.completeAllTasks(completedTasks);
     };
 
+    _getAllCompleted = () => {
+        const { tasks } = this.props;
+
+        return tasks.every((task) => task.get('completed'));
+    };
+
+    _filterTasks = () => {
+        const { tasks, filter } = this.props;
+
+        if (filter) {
+            return sortTasksByGroup(
+                tasks.filter((task) =>
+                    task
+                        .get('message')
+                        .toLowerCase()
+                        .includes(filter.toLowerCase())
+                )
+            );
+        }
+
+        return sortTasksByGroup(tasks);
+    };
+
     render () {
-        const { actions, tasks, filter, newMessage } = this.props;
+        const { actions, newMessage } = this.props;
 
-        const getAllCompleted = tasks.every((task) => task.get('completed'));
+        const getAllCompleted = this._getAllCompleted();
 
-        const search = tasks.filter((task) =>
-            task
-                .get('message')
-                .toLowerCase()
-                .includes(filter.toLowerCase())
-        );
+        const list = this._filterTasks();
 
-        const list = sortTasksByGroup(filter ? search : tasks);
-        const todoList = list.map((task) => (
+        const tasksList = list.map((task) => (
             <Catcher key = { task.get('id') }>
                 <Task
                     actions = { actions }
@@ -121,13 +136,11 @@ export default class Scheduler extends Component {
                             noValidate
                             model = 'forms.newTask'
                             onSubmit = { this._createTask }>
-                            <Control
-                                required
+                            <Control.text
                                 className = { Styles.createTask }
                                 maxLength = { 50 }
                                 model = 'forms.newTask.message'
                                 placeholder = 'Описание моей новой задачи'
-                                type = 'text'
                                 value = { newMessage }
                             />
                             <button>Добавить задачу</button>
@@ -156,7 +169,7 @@ export default class Scheduler extends Component {
                                         },
                                     } }
                                     staggerDelayBy = { 50 }>
-                                    {todoList}
+                                    {tasksList}
                                 </FlipMove>
                             </ul>
                         </div>

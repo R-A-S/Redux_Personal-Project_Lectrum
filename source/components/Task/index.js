@@ -61,13 +61,15 @@ export default class Task extends PureComponent {
     _updateTaskMessageOnClick = () => {
         const {
             id,
-            actions: { editTask },
             message,
             isTaskEditing,
+            actions: { editTask },
         } = this.props;
 
         if (isTaskEditing) {
-            return editTask(message);
+            editTask(message);
+
+            return null;
         }
 
         editTask(message, id);
@@ -75,9 +77,9 @@ export default class Task extends PureComponent {
 
     _updateTaskMessageOnKeyDown = (e) => {
         const {
-            actions: { editTask },
             message,
             editedMessage,
+            actions: { editTask },
         } = this.props;
 
         if (e.key === 'Enter' && editedMessage.trim()) {
@@ -86,7 +88,7 @@ export default class Task extends PureComponent {
         }
 
         if (e.key === 'Escape') {
-            return editTask(message);
+            editTask(message);
         }
     };
 
@@ -99,22 +101,17 @@ export default class Task extends PureComponent {
     };
 
     render () {
-        const { message, completed, favorite, isTaskEditing } = this.props;
+        const {
+            message,
+            completed,
+            favorite,
+            isTaskEditing,
+            editedMessage,
+        } = this.props;
 
         const styles = cx(Styles.task, {
             [Styles.completed]: completed,
         });
-
-        const messageEdit = isTaskEditing ? (
-            <Control.text
-                getRef = { (node) => node && node.focus() }
-                maxLength = { 50 }
-                model = 'forms.edit.editedMessage'
-                onKeyDown = { this._updateTaskMessageOnKeyDown }
-            />
-        ) : (
-            <input disabled type = 'text' value = { message } />
-        );
 
         return (
             <li className = { styles }>
@@ -127,7 +124,14 @@ export default class Task extends PureComponent {
                         color2 = '#FFF'
                         onClick = { this._toggleTaskCompletedState }
                     />
-                    {messageEdit}
+                    <Control.text
+                        disabled = { !isTaskEditing }
+                        getRef = { (node) => node && node.focus() }
+                        maxLength = { 50 }
+                        model = 'forms.edit.editedMessage'
+                        value = { isTaskEditing ? editedMessage : message }
+                        onKeyDown = { this._updateTaskMessageOnKeyDown }
+                    />
                 </div>
                 <div className = { Styles.actions }>
                     <Star

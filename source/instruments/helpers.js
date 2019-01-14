@@ -20,9 +20,15 @@ export const sortTasksByDate = (tasks) => {
 };
 
 export const sortTasksByGroup = (tasks) => {
-    const favorite = tasks.filter((task) => task.get('favorite') && !task.get('completed'));
-    const usual = tasks.filter((task) => !task.get('favorite') && !task.get('completed'));
-    const completed = sortTasksByDate(tasks.filter((task) => task.get('completed')));
+    const favorite = tasks.filter(
+        (task) => task.get('favorite') && !task.get('completed')
+    );
+    const usual = tasks.filter(
+        (task) => !task.get('favorite') && !task.get('completed')
+    );
+    const completed = sortTasksByDate(
+        tasks.filter((task) => task.get('completed'))
+    );
 
     const sortedCompleted = [
         ...completed.sort((task1, task2) => {
