@@ -1,8 +1,8 @@
 // Core
 import React, { PureComponent } from 'react';
 import cx from 'classnames';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 // Instruments
 import Styles from './styles.m.css';
@@ -45,7 +45,7 @@ const mapDispatchToProps = (dispatch) => {
     mapStateToProps,
     mapDispatchToProps
 )
-export default class Task extends PureComponent {
+class Task extends PureComponent {
     _removeTask = () => {
         const { actions, id } = this.props;
 
@@ -162,3 +162,5 @@ export default class Task extends PureComponent {
         );
     }
 }
+
+export default Task;

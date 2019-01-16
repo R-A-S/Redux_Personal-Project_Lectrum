@@ -2,9 +2,12 @@
     "runner": "jest-runner",
     "displayName": "test:unit",
     "rootDir": "../",
-    "verbose": false,
+    "verbose": true,
     "notify": true,
     "bail": false,
+    "globals": {
+        "__DEV__": true
+    },
     "collectCoverage": false,
     "collectCoverageFrom": ["<rootDir>/source/**/*.js"],
     "coveragePathIgnorePatterns": [

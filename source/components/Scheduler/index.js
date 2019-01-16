@@ -42,7 +42,7 @@ const mapDispatchToProps = (dispatch) => {
     mapStateToProps,
     mapDispatchToProps
 )
-export default class Scheduler extends Component {
+class Scheduler extends Component {
     componentDidMount () {
         const { actions } = this.props;
 
@@ -190,3 +190,5 @@ export default class Scheduler extends Component {
         );
     }
 }
+
+export default Scheduler;
